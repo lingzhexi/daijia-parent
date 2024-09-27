@@ -18,6 +18,11 @@
     </properties>
 
     <dependencies>
+        <!--微信工具包-->
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-miniapp</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
