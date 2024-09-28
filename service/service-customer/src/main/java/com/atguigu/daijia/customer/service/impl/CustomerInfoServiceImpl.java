@@ -32,7 +32,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
      *      1、前端开发者appid与服务器端appid一致
      *      2、前端开发者必须加入开发者
      * @param code
-     * @return
+     * @return 用户Id
      */
     @Override
     public Long login(String code) {
@@ -59,7 +59,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
 
         //4、记录登录日志
         CustomerLoginLog customerLoginLog = new CustomerLoginLog();
-        customerLoginLog.setId(customerInfo.getId());
+        customerLoginLog.setCustomerId(customerInfo.getId());
         customerLoginLog.setMsg("小程序登录");
         customerLoginLogMapper.insert(customerLoginLog);
 
