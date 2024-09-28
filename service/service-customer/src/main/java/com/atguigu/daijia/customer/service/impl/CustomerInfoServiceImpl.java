@@ -52,7 +52,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         if (customerInfo == null) {
             customerInfo = new CustomerInfo();
             customerInfo.setNickname(String.valueOf(System.currentTimeMillis()));
-            customerInfo.setAvatarUrl("x");
+            customerInfo.setAvatarUrl("https://oss.aliyuncs.com/aliyun_id_photo _bucket/default_handsome.jpg");
             customerInfo.setWxOpenId(openid);
             baseMapper.insert(customerInfo);
         }
