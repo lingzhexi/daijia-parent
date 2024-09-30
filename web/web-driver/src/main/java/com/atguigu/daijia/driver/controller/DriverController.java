@@ -1,7 +1,11 @@
 package com.atguigu.daijia.driver.controller;
 
+import com.atguigu.daijia.common.annotation.Login;
 import com.atguigu.daijia.common.result.Result;
+import com.atguigu.daijia.common.util.AuthContextHolder;
+import com.atguigu.daijia.driver.client.DriverInfoFeignClient;
 import com.atguigu.daijia.driver.service.DriverService;
+import com.atguigu.daijia.model.vo.driver.DriverLoginVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -21,12 +25,26 @@ public class DriverController {
     @Autowired
     private DriverService driverService;
 
+    @Autowired
+    private DriverInfoFeignClient driverInfoFeignClient;
+
     @Operation(summary = "小程序授权登录")
     @GetMapping("/login/{code}")
     public Result<String> login(@PathVariable String code) {
         return Result.ok(driverService.login(code));
     }
-	
+
+    @Login
+    @Operation(summary = "获取用户登录信息")
+    @GetMapping("/getDriverLoginInfo")
+    public Result<DriverLoginVo> getDriverLoginInfo(){
+        //1.获取用户id
+        Long driverId = AuthContextHolder.getUserId();
+
+        //2.调用远程接口，获取信息返回
+        Result<DriverLoginVo> driverLoginInfo = driverInfoFeignClient.getDriverLoginInfo(driverId);
+        return Result.ok(driverLoginInfo.getData());
+    }
 
 }
 

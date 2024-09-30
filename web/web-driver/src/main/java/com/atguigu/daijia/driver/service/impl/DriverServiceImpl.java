@@ -38,8 +38,8 @@ public class DriverServiceImpl implements DriverService {
         String token = UUID.randomUUID().toString().replaceAll("-", "");
 
         //3.token 存入 redis 设置过期时间
-        redisTemplate.opsForValue().set(RedisConstant.USER_LOGIN_KEY_PREFIX + token, driverId,
-                RedisConstant.USER_LOGIN_KEY_TIMEOUT, TimeUnit.MICROSECONDS);
+        redisTemplate.opsForValue().set(RedisConstant.USER_LOGIN_KEY_PREFIX + token, driverId.toString(),
+                RedisConstant.USER_LOGIN_KEY_TIMEOUT, TimeUnit.SECONDS);
 
         //4.返回 token
         return token;
