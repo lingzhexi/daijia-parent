@@ -6,6 +6,7 @@ import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.common.result.ResultCodeEnum;
 import com.atguigu.daijia.customer.client.CustomerInfoFeignClient;
 import com.atguigu.daijia.customer.service.CustomerService;
+import com.atguigu.daijia.model.form.customer.UpdateWxPhoneForm;
 import com.atguigu.daijia.model.vo.customer.CustomerLoginVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,4 +87,21 @@ public class CustomerServiceImpl implements CustomerService {
         // 4.返回用户登录信息
         return customerLoginVo;
     }
+
+    @Override
+    public CustomerLoginVo getCustomerInfo(Long customerId) {
+        // 1.根据用户id进行远程调用，得到用户信息
+        Result<CustomerLoginVo> result = client.getCustomerLoginInfo(customerId);
+        if (result.getCode() != 200) {
+            throw new GuiguException(ResultCodeEnum.DATA_ERROR);
+        }
+
+        CustomerLoginVo customerLoginVo = result.getData();
+        if (customerLoginVo == null) {
+            throw new GuiguException(ResultCodeEnum.SERVICE_ERROR);
+        }
+        // 2.返回用户登录信息
+        return customerLoginVo;
+    }
+
 }
