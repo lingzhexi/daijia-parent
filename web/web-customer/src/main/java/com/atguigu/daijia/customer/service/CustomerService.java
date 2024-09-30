@@ -1,7 +1,6 @@
 package com.atguigu.daijia.customer.service;
 
 import com.atguigu.daijia.model.form.customer.UpdateWxPhoneForm;
-import com.atguigu.daijia.model.vo.customer.CustomerInfoVo;
 import com.atguigu.daijia.model.vo.customer.CustomerLoginVo;
 
 public interface CustomerService {
@@ -14,4 +13,7 @@ public interface CustomerService {
 
     //获取用户信息
     CustomerLoginVo getCustomerInfo(Long customerId);
+
+    //获取微信用户手机号
+    Boolean updateWxPhoneNumber(UpdateWxPhoneForm updateWxPhoneForm);
 }

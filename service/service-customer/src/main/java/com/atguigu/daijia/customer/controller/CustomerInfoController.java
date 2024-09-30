@@ -4,7 +4,6 @@ import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.customer.service.CustomerInfoService;
 import com.atguigu.daijia.model.entity.customer.CustomerInfo;
 import com.atguigu.daijia.model.form.customer.UpdateWxPhoneForm;
-import com.atguigu.daijia.model.vo.customer.CustomerInfoVo;
 import com.atguigu.daijia.model.vo.customer.CustomerLoginVo;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +18,13 @@ public class CustomerInfoController {
 
 	@Autowired
 	private CustomerInfoService customerInfoService;
+
+	@Operation(summary = "获取微信用户手机号")
+	@PostMapping("/updateWxPhoneNumber")
+	public Result<Boolean> updateWxPhoneNumber(@RequestBody UpdateWxPhoneForm wxPhoneForm) {
+		return Result.ok(customerInfoService.updateWxPhoneNumber(wxPhoneForm));
+
+	}
 
 	@Operation(summary = "获取客户登陆信息")
 	@GetMapping("/getCustomerLoginInfo/{customerId}")

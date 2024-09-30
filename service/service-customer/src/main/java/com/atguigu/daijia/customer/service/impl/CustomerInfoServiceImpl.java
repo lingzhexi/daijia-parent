@@ -2,14 +2,17 @@ package com.atguigu.daijia.customer.service.impl;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
+import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
 import com.atguigu.daijia.customer.mapper.CustomerInfoMapper;
 import com.atguigu.daijia.customer.mapper.CustomerLoginLogMapper;
 import com.atguigu.daijia.customer.service.CustomerInfoService;
 import com.atguigu.daijia.model.entity.customer.CustomerInfo;
 import com.atguigu.daijia.model.entity.customer.CustomerLoginLog;
+import com.atguigu.daijia.model.form.customer.UpdateWxPhoneForm;
 import com.atguigu.daijia.model.vo.customer.CustomerLoginVo;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.error.WxErrorException;
 import org.springframework.beans.BeanUtils;
@@ -87,5 +90,19 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
 
         //3.CustomerLoginVO 返回
         return customerLoginVo;
+    }
+
+    @SneakyThrows
+    @Override
+    public Boolean updateWxPhoneNumber(UpdateWxPhoneForm wxPhoneForm) {
+        //1.调用微信 API 获取用户的手机号
+        WxMaPhoneNumberInfo phoneNoInfo = wxMaService.getUserService().getPhoneNoInfo(wxPhoneForm.getCode());
+        String phoneNumber = phoneNoInfo.getPhoneNumber();
+
+        //2.根据用户id，更新用户手机号
+        CustomerInfo customerInfo = new CustomerInfo();
+        customerInfo.setId(wxPhoneForm.getCustomerId());
+        customerInfo.setPhone(phoneNumber);
+        return this.updateById(customerInfo);
     }
 }

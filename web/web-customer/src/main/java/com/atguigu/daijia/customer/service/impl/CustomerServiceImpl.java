@@ -104,4 +104,10 @@ public class CustomerServiceImpl implements CustomerService {
         return customerLoginVo;
     }
 
+    @Override
+    public Boolean updateWxPhoneNumber(UpdateWxPhoneForm updateWxPhoneForm) {
+        client.updateWxPhoneNumber(updateWxPhoneForm);
+        return true;
+    }
+
 }
