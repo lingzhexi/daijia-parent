@@ -32,7 +32,7 @@ spring:
           max-idle: 5    #最大空闲
           min-idle: 0     #最小空闲
   rabbitmq:
-    host: 139.198.152.148
+    host: localhost
     port: 5672
     username: guest
     password: guest

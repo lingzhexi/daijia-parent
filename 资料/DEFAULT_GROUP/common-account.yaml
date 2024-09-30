@@ -1,10 +1,10 @@
 wx:
   miniapp:
-    appId: wxcc651fcbab275e33  # 小程序微信公众平台appId
-    secret: 5f353399a2eae7ff6ceda383e924c5f6  # 小程序微信公众平台api秘钥
+    appId: wx93e750028f066ff4  # 小程序微信公众平台appId
+    secret: e9ab781f3c9a5fcfff114a4f6347d927  # 小程序微信公众平台api秘钥
   v3pay:
     #小程序微信公众平台appId
-    appid: wxcc651fcbab275e33
+    appid: wx93e750028f066ff4
     #商户号
     merchantId: 1631833859
     #商户API私钥路径
@@ -25,7 +25,7 @@ tencent:
   map:
     key: PYOBZ-Y6ZRZ-HMZXP-ZTMES-***-***
 minio:
-  endpointUrl: http://139.198.127.41:9000
+  endpointUrl: http://localhost:9000
   accessKey: admin
   secreKey: admin123456
   bucketName: sph

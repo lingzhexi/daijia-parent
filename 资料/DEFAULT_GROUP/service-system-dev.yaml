@@ -34,9 +34,9 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://139.198.104.58:3306/tingshu_system?serverTimezone=UTC&characterEncoding=utf8&useUnicode=true&useSSL=true
+    url: jdbc:mysql://localhost:3306/tingshu_system?serverTimezone=UTC&characterEncoding=utf8&useUnicode=true&useSSL=true
     username: root
-    password: shangguigu@QY123
+    password: root
     hikari:
       connection-test-query: SELECT 1
       connection-timeout: 60000

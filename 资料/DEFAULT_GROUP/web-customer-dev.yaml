@@ -16,7 +16,7 @@ spring:
             readTimeout: 30000
             loggerLevel: basic
   rabbitmq:
-    host: 139.198.163.91
+    host: localhost
     port: 5672
     username: guest
     password: guest

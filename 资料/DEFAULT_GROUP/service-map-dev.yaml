@@ -32,7 +32,7 @@ spring:
           max-idle: 5    #最大空闲
           min-idle: 0     #最小空闲
     mongodb:
-      host: 39.98.123.211
+      host: localhost
       port: 27017
       database: daijia #指定操作的数据库
   jackson:
