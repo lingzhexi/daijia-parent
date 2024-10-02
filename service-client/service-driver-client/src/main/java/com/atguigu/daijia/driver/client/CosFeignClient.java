@@ -12,5 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 @FeignClient(value = "service-driver")
 public interface CosFeignClient {
 
-
+    @PostMapping(value ="/cos/upload",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    Result<CosUploadVo> upload(@RequestPart("file") MultipartFile file,
+                               @RequestParam(name = "path", defaultValue = "auth") String path);
 }

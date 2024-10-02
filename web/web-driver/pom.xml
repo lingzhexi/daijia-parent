@@ -30,6 +30,13 @@
 			<groupId>io.minio</groupId>
 			<artifactId>minio</artifactId>
 		</dependency>
+
+		<!--腾讯cos对象存储-->
+		<dependency>
+			<groupId>com.qcloud</groupId>
+			<artifactId>cos_api</artifactId>
+			<version>5.6.227</version>
+		</dependency>
 	</dependencies>
 
 	<build>
