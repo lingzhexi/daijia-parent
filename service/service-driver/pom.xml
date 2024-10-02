@@ -23,6 +23,14 @@
             <groupId>com.qcloud</groupId>
             <artifactId>cos_api</artifactId>
         </dependency>
+
+        <!--腾讯云ocr-->
+        <dependency>
+            <groupId>com.tencentcloudapi</groupId>
+            <artifactId>tencentcloud-sdk-java-ocr</artifactId>
+            <version>3.1.1114</version>
+        </dependency>
+
     </dependencies>
 
     <build>

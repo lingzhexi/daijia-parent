@@ -14,6 +14,9 @@ public class IdCardOcrVo {
 	@Schema(description = "性别 1：男 2：女")
 	private String gender;
 
+	@Schema(description = "民族")
+	private String nation;
+
 	@Schema(description = "生日")
 	private Date birthday;
 
@@ -22,6 +25,9 @@ public class IdCardOcrVo {
 
 	@Schema(description = "身份证地址")
 	private String idcardAddress;
+
+	@Schema(description = "发证机关（国徽面）")
+	private String authority;
 
 	@Schema(description = "身份证有效期")
 	private Date idcardExpire;

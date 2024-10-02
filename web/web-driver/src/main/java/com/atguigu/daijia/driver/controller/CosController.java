@@ -1,5 +1,6 @@
 package com.atguigu.daijia.driver.controller;
 
+import com.atguigu.daijia.common.annotation.Login;
 import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.driver.service.CosService;
 import com.atguigu.daijia.model.vo.driver.CosUploadVo;
@@ -26,7 +27,7 @@ public class CosController {
      * @param path 上传目录
      * @return
      */
-//    @Login
+    @Login
     @Operation(summary = "文件上传")
     @PostMapping("/upload")
     public Result<CosUploadVo> upload(@RequestPart("file") MultipartFile file,

@@ -6,6 +6,10 @@ import com.qcloud.cos.auth.BasicCOSCredentials;
 import com.qcloud.cos.auth.COSCredentials;
 import com.qcloud.cos.http.HttpProtocol;
 import com.qcloud.cos.region.Region;
+import com.tencentcloudapi.common.Credential;
+import com.tencentcloudapi.common.profile.ClientProfile;
+import com.tencentcloudapi.common.profile.HttpProfile;
+import com.tencentcloudapi.ocr.v20181119.OcrClient;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -40,4 +44,24 @@ public class TencentConfigProperties {
         COSClient cosClient = new COSClient(cred, clientConfig);
         return cosClient;
     }
+
+    /**
+     * 创建Ocr客户端
+     * @return
+     */
+    @Bean
+    public OcrClient getOcrClient() {
+        // 1.实例化一个认证对象，传入 SecretId 和 SecretKey
+        Credential cred = new Credential(this.getSecretId(), this.getSecretKey());
+        // 2.实例化一个http选项，可选的，没有特殊需求可以跳过
+        HttpProfile httpProfile = new HttpProfile();
+        httpProfile.setEndpoint("ocr.tencentcloudapi.com");
+        // 3.实例化一个client选项，可选的，没有特殊需求可以跳过
+        ClientProfile clientProfile = new ClientProfile();
+        clientProfile.setHttpProfile(httpProfile);
+        // 4.实例化要请求产品的client对象,clientProfile是可选的
+        OcrClient client = new OcrClient(cred, this.getRegion(), clientProfile);
+        return client;
+    }
+
 }
