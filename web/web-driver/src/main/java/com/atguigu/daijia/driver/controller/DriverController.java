@@ -5,6 +5,7 @@ import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.common.util.AuthContextHolder;
 import com.atguigu.daijia.driver.client.DriverInfoFeignClient;
 import com.atguigu.daijia.driver.service.DriverService;
+import com.atguigu.daijia.model.vo.driver.DriverAuthInfoVo;
 import com.atguigu.daijia.model.vo.driver.DriverLoginVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @Tag(name = "司机API接口管理")
 @RestController
-@RequestMapping(value="/driver")
+@RequestMapping(value = "/driver")
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class DriverController {
 
@@ -37,7 +38,7 @@ public class DriverController {
     @Login
     @Operation(summary = "获取用户登录信息")
     @GetMapping("/getDriverLoginInfo")
-    public Result<DriverLoginVo> getDriverLoginInfo(){
+    public Result<DriverLoginVo> getDriverLoginInfo() {
         //1.获取用户id
         Long driverId = AuthContextHolder.getUserId();
 
@@ -46,5 +47,12 @@ public class DriverController {
         return Result.ok(driverLoginInfo.getData());
     }
 
+    @Login
+    @Operation(summary = "获取司机认证信息")
+    @GetMapping("/getDriverAuthInfo/{driverId}")
+    public Result<DriverAuthInfoVo> getDriverAuthInfo(@PathVariable Long driverId) {
+        Result<DriverAuthInfoVo> driverAuthInfo = driverInfoFeignClient.getDriverAuthInfo(driverId);
+        return Result.ok(driverAuthInfo.getData());
+    }
 }
 
