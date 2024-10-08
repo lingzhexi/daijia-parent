@@ -5,6 +5,7 @@ import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import com.atguigu.daijia.common.constant.SystemConstant;
 import com.atguigu.daijia.common.execption.GuiguException;
 import com.atguigu.daijia.common.result.ResultCodeEnum;
+import com.atguigu.daijia.driver.config.TencentConfigProperties;
 import com.atguigu.daijia.driver.mapper.DriverAccountMapper;
 import com.atguigu.daijia.driver.mapper.DriverInfoMapper;
 import com.atguigu.daijia.driver.mapper.DriverLoginLogMapper;
@@ -15,11 +16,16 @@ import com.atguigu.daijia.model.entity.driver.DriverAccount;
 import com.atguigu.daijia.model.entity.driver.DriverInfo;
 import com.atguigu.daijia.model.entity.driver.DriverLoginLog;
 import com.atguigu.daijia.model.entity.driver.DriverSet;
+import com.atguigu.daijia.model.form.driver.DriverFaceModelForm;
 import com.atguigu.daijia.model.form.driver.UpdateDriverAuthInfoForm;
 import com.atguigu.daijia.model.vo.driver.DriverAuthInfoVo;
 import com.atguigu.daijia.model.vo.driver.DriverLoginVo;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.tencentcloudapi.common.AbstractModel;
+import com.tencentcloudapi.common.exception.TencentCloudSDKException;
+import com.tencentcloudapi.iai.v20180301.models.CreatePersonRequest;
+import com.tencentcloudapi.iai.v20180301.models.CreatePersonResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -52,6 +58,9 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
 
     @Autowired
     private CosService cosService;
+
+    @Autowired
+    private TencentConfigProperties tencentConfigProperties;
 
     @Override
     public Long login(String code) {
@@ -153,6 +162,45 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
 
         //3.更新 driverInfo
         return this.updateById(driverInfo);
+    }
+
+    @Override
+    public Boolean createDriverFaceModel(DriverFaceModelForm driverFaceModelForm) {
+        // 1.查询司机基本信息
+        DriverInfo driverInfo = this.getById(driverFaceModelForm.getDriverId());
+        try {
+            // 2.拼接CreateGroupRequest对象
+            CreatePersonRequest req = getRequest(driverFaceModelForm, driverInfo);
+
+            // 3.返回的resp是一个CreateGroupResponse的实例，与请求对象对应
+            CreatePersonResponse resp = tencentConfigProperties.getIaiClient().CreatePerson(req);
+            log.info("人脸识别返回接口数据：{}", AbstractModel.toJsonString(resp));
+            String faceId = resp.getFaceId();
+            // 4.判断返回是否有人脸Id
+            if (StringUtils.hasText(faceId)) {
+                driverInfo.setFaceModelId(faceId);
+                this.updateById(driverInfo);
+            }
+        } catch (TencentCloudSDKException e) {
+            return false;
+        }
+        return true;
+    }
+
+    public CreatePersonRequest getRequest(DriverFaceModelForm driverFaceModelForm, DriverInfo driverInfo) {
+        CreatePersonRequest req = new CreatePersonRequest();
+
+        // 设置相关值
+        req.setGroupId(tencentConfigProperties.getPersonGroupId());
+
+        //基本信息
+        req.setPersonId(String.valueOf(driverInfo.getId()));
+        req.setGender(Long.parseLong(driverInfo.getGender()));
+        req.setQualityControl(4L);
+        req.setUniquePersonControl(4L);
+        req.setPersonName(driverInfo.getName());
+        req.setImage(driverFaceModelForm.getImageBase64());
+        return req;
     }
 
 }
