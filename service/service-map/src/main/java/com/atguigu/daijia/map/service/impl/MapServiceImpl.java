@@ -34,7 +34,7 @@ public class MapServiceImpl implements MapService {
     @Override
     public DrivingLineVo calculateDrivingLine(CalculateDrivingLineForm calculateDrivingLineForm) {
 
-        String url = "https://apis.map.qq.com/ws/direction/v1/driving/?from={}&to={}&key={key}";
+        String url = "https://apis.map.qq.com/ws/direction/v1/driving/?from={from}&to={to}&key={key}";
         // 1.拼接调用参数
         HashMap<String, String> map = new HashMap<>();
         //  起、终点位置坐标 格式：纬度在前，经度在后，半角逗号分隔
