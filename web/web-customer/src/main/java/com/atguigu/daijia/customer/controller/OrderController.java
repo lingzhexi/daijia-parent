@@ -8,7 +8,6 @@ import com.atguigu.daijia.model.form.customer.ExpectOrderForm;
 import com.atguigu.daijia.model.form.customer.SubmitOrderForm;
 import com.atguigu.daijia.model.vo.customer.ExpectOrderVo;
 import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
-import com.atguigu.daijia.order.client.OrderInfoFeignClient;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +23,6 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
-
-    @Autowired
-    private OrderInfoFeignClient orderInfoFeignClient;
 
     @Operation(summary = "查找乘客端当前订单")
     @Login
