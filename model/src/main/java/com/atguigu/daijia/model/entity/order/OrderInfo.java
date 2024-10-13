@@ -32,7 +32,7 @@ public class OrderInfo extends BaseEntity {
 	@TableField("start_point_longitude")
 	private BigDecimal startPointLongitude;
 
-    @Schema(description = "起始点伟度")
+    @Schema(description = "起始点纬度")
 	@TableField("start_point_latitude")
 	private BigDecimal startPointLatitude;
 
@@ -44,7 +44,7 @@ public class OrderInfo extends BaseEntity {
 	@TableField("end_point_longitude")
 	private BigDecimal endPointLongitude;
 
-    @Schema(description = "结束地点经度")
+    @Schema(description = "结束地点纬度")
 	@TableField("end_point_latitude")
 	private BigDecimal endPointLatitude;
 
