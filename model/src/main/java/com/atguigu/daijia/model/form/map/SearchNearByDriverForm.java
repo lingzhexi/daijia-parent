@@ -11,7 +11,7 @@ public class SearchNearByDriverForm {
     @Schema(description = "经度")
     private BigDecimal longitude;
 
-    @Schema(description = "伟度")
+    @Schema(description = "纬度")
     private BigDecimal latitude;
 
     @Schema(description = "里程")
