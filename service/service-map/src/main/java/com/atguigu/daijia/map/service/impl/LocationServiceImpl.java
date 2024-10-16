@@ -55,8 +55,8 @@ public class LocationServiceImpl implements LocationService {
     @Override
     public List<NearByDriverVo> searchNearByDriver(SearchNearByDriverForm searchNearByDriverForm) {
         //搜索经纬度5公里内的司机
-        Point point = new Point(searchNearByDriverForm.getLatitude().doubleValue(),
-                searchNearByDriverForm.getLongitude().doubleValue());
+        Point point = new Point(searchNearByDriverForm.getLongitude().doubleValue(),
+                searchNearByDriverForm.getLatitude().doubleValue());
 
         Distance distance = new Distance(SystemConstant.NEARBY_DRIVER_RADIUS,
                 RedisGeoCommands.DistanceUnit.KILOMETERS);
@@ -97,7 +97,7 @@ public class LocationServiceImpl implements LocationService {
                 }
                 // 订单接单距离要大于司机设定的 接单里程距离（太远不接）
                 if (currentDistance.doubleValue() != 0 &&
-                        driverSet.getAcceptDistance().subtract(currentDistance).doubleValue()> 0) {
+                        driverSet.getAcceptDistance().subtract(currentDistance).doubleValue() < 0) {
                     continue;
                 }
                 NearByDriverVo nearByDriverVo = new NearByDriverVo();
