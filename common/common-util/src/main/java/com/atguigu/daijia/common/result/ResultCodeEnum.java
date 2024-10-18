@@ -32,6 +32,7 @@ public enum ResultCodeEnum {
     ACCOUNT_STOP( 216, "账号已停用"),
     NODE_ERROR( 217, "该节点下有子节点，不可以删除"),
 
+    XXL_JOB_ERROR(217, "xxl执行任务失败"),
     COB_NEW_ORDER_FAIL( 217, "抢单失败"),
     MAP_FAIL( 217, "地图服务调用失败"),
     PROFITSHARING_FAIL( 217, "分账调用失败"),
@@ -44,8 +45,7 @@ public enum ResultCodeEnum {
 
     COUPON_EXPIRE( 250, "优惠券已过期"),
     COUPON_LESS( 250, "优惠券库存不足"),
-    COUPON_USER_LIMIT( 250, "超出领取数量"),
-    ;
+    COUPON_USER_LIMIT(250, "超出领取数量");
 
     private Integer code;
 

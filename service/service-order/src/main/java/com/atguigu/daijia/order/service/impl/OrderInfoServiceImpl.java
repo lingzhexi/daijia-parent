@@ -2,7 +2,7 @@ package com.atguigu.daijia.order.service.impl;
 
 import com.atguigu.daijia.model.entity.order.OrderInfo;
 import com.atguigu.daijia.model.entity.order.OrderStatusLog;
-import com.atguigu.daijia.model.enums.OrderStatus;
+import com.atguigu.daijia.model.enums.OrderStatusEnum;
 import com.atguigu.daijia.model.form.order.OrderInfoForm;
 import com.atguigu.daijia.order.mapper.OrderInfoMapper;
 import com.atguigu.daijia.order.mapper.OrderStatusLogMapper;
@@ -41,7 +41,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         String orderNo = UUID.randomUUID().toString().replace("-", "");
         orderInfo.setOrderNo(orderNo);
         // 订单状态
-        orderInfo.setStatus(OrderStatus.WAITING_ACCEPT.getStatus());
+        orderInfo.setStatus(OrderStatusEnum.WAITING_ACCEPT.getStatus());
 
         // 保存OrderInfo
         infoMapper.insert(orderInfo);
@@ -64,7 +64,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         wrapper.select(OrderInfo::getStatus);
         OrderInfo orderInfo = infoMapper.selectOne(wrapper);
         if (orderInfo == null) {
-            return OrderStatus.NULL_ORDER.getStatus();
+            return OrderStatusEnum.NULL_ORDER.getStatus();
         }
         return orderInfo.getStatus();
     }

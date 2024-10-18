@@ -2,6 +2,7 @@ package com.atguigu.daijia.customer.service.impl;
 
 import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.customer.service.OrderService;
+import com.atguigu.daijia.dispatch.client.NewOrderFeignClient;
 import com.atguigu.daijia.map.client.MapFeignClient;
 import com.atguigu.daijia.model.form.customer.ExpectOrderForm;
 import com.atguigu.daijia.model.form.customer.SubmitOrderForm;
@@ -9,6 +10,7 @@ import com.atguigu.daijia.model.form.map.CalculateDrivingLineForm;
 import com.atguigu.daijia.model.form.order.OrderInfoForm;
 import com.atguigu.daijia.model.form.rules.FeeRuleRequestForm;
 import com.atguigu.daijia.model.vo.customer.ExpectOrderVo;
+import com.atguigu.daijia.model.vo.dispatch.NewOrderTaskVo;
 import com.atguigu.daijia.model.vo.map.DrivingLineVo;
 import com.atguigu.daijia.model.vo.rules.FeeRuleResponseVo;
 import com.atguigu.daijia.order.client.OrderInfoFeignClient;
@@ -33,6 +35,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderInfoFeignClient orderInfoFeignClient;
+
+    @Autowired
+    private NewOrderFeignClient newOrderFeignClient;
 
     //预估订单数据
     @Override
@@ -81,9 +86,29 @@ public class OrderServiceImpl implements OrderService {
         BeanUtils.copyProperties(submitOrderForm, orderInfoForm);
         orderInfoForm.setExpectAmount(feeRuleData.getTotalAmount());
         orderInfoForm.setExpectDistance(drivingLine.getDistance());
-        Result<Long> orderInfoResult = orderInfoFeignClient.saveOrderInfo(orderInfoForm);
+        Result<Long> orderResult = orderInfoFeignClient.saveOrderInfo(orderInfoForm);
+        Long orderId = orderResult.getData();
 
-        //TODO 查询附近可以接单的司机
-        return orderInfoResult.getData();
+        //任务调度：查询附近可以接单的司机
+        NewOrderTaskVo newOrderDispatchVo = new NewOrderTaskVo();
+        newOrderDispatchVo.setOrderId(orderId);
+        newOrderDispatchVo.setStartLocation(orderInfoForm.getStartLocation());
+        newOrderDispatchVo.setStartPointLongitude(orderInfoForm.getStartPointLongitude());
+        newOrderDispatchVo.setStartPointLatitude(orderInfoForm.getStartPointLatitude());
+        newOrderDispatchVo.setEndLocation(orderInfoForm.getEndLocation());
+        newOrderDispatchVo.setEndPointLongitude(orderInfoForm.getEndPointLongitude());
+        newOrderDispatchVo.setEndPointLatitude(orderInfoForm.getEndPointLatitude());
+        newOrderDispatchVo.setExpectAmount(orderInfoForm.getExpectAmount());
+        newOrderDispatchVo.setExpectDistance(orderInfoForm.getExpectDistance());
+        newOrderDispatchVo.setExpectTime(drivingLine.getDuration());
+        newOrderDispatchVo.setFavourFee(orderInfoForm.getFavourFee());
+        newOrderDispatchVo.setCreateTime(new Date());
+
+        //调用新增并开启任务
+        Result<Long> jobIdResult = newOrderFeignClient.addAndStartTask(newOrderDispatchVo);
+        Long jobId = jobIdResult.getData();
+        log.info("订单Id为：{}，绑定任务Id为：{}", orderId, jobId);
+
+        return orderId;
     }
 }
