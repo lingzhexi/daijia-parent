@@ -5,7 +5,6 @@ import com.atguigu.daijia.common.execption.GuiguException;
 import com.atguigu.daijia.common.result.ResultCodeEnum;
 import com.atguigu.daijia.dispatch.xxl.config.XxlJobClientConfig;
 import com.atguigu.daijia.model.entity.dispatch.XxlJobInfo;
-import com.xxl.job.core.enums.ExecutorBlockStrategyEnum;
 import com.xxl.job.core.glue.GlueTypeEnum;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -178,7 +177,7 @@ public class XxlJobClient {
         xxlJobInfo.setExecutorHandler(executorHandler);
         xxlJobInfo.setExecutorParam(param);
         xxlJobInfo.setExecutorRouteStrategy("FIRST");
-        xxlJobInfo.setExecutorBlockStrategy(ExecutorBlockStrategyEnum.SERIAL_EXECUTION.getTitle());
+        xxlJobInfo.setExecutorBlockStrategy("SERIAL_EXECUTION");
         xxlJobInfo.setMisfireStrategy("FIRE_ONCE_NOW");
         xxlJobInfo.setExecutorTimeout(0);
         xxlJobInfo.setExecutorFailRetryCount(0);

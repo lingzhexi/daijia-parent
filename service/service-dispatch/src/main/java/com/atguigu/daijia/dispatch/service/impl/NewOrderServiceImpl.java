@@ -58,21 +58,21 @@ public class NewOrderServiceImpl implements NewOrderService {
         LambdaQueryWrapper<OrderJob> query = new LambdaQueryWrapper<>();
         query.eq(OrderJob::getOrderId, newOrderTaskVo.getOrderId());
         OrderJob orderJob = orderJobMapper.selectOne(query);
-        if (orderJob != null) {
-            return orderJob.getJobId();
-        }
-        //2 没有启动 进行操作
-        //   调用任务 每分钟执行一次
-        String executorHandler = "newOrderTaskHandler";
-        String desc = "添加新订单任务调度：" + newOrderTaskVo.getOrderId();
-        String corn = xxlJobClientConfig.getAddOrderCorn();
-        Long jobId = xxlJobClient.addAndStart(executorHandler, "", corn, desc);
+        if (orderJob == null) {
+            //2 没有启动 进行操作
+            //   调用任务 每分钟执行一次
+            String executorHandler = "newOrderTaskHandler";
+            String desc = "新订单任务,订单id：" + newOrderTaskVo.getOrderId();
+            String corn = xxlJobClientConfig.getAddOrderCorn();
+            Long jobId = xxlJobClient.addAndStart(executorHandler, "", corn, desc);
 
-        //记录任务调度信息 添加orderId、jobId
-        orderJob.setJobId(jobId);
-        orderJob.setOrderId(newOrderTaskVo.getOrderId());
-        orderJob.setParameter(JSONObject.toJSONString(newOrderTaskVo));
-        orderJobMapper.insert(orderJob);
+            //记录任务调度信息 添加orderId、jobId
+            orderJob = new OrderJob();
+            orderJob.setJobId(jobId);
+            orderJob.setOrderId(newOrderTaskVo.getOrderId());
+            orderJob.setParameter(JSONObject.toJSONString(newOrderTaskVo));
+            orderJobMapper.insert(orderJob);
+        }
         return orderJob.getJobId();
     }
 
