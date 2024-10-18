@@ -39,6 +39,11 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private NewOrderFeignClient newOrderFeignClient;
 
+    @Override
+    public Integer getOrderStatus(Long orderId) {
+        return orderInfoFeignClient.getOrderStatus(orderId).getData();
+    }
+
     //预估订单数据
     @Override
     public ExpectOrderVo expectOrderVo(ExpectOrderForm expectOrderForm) {

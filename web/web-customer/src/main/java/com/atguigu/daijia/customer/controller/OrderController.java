@@ -24,6 +24,13 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
+    @Operation(summary = "查询订单状态")
+    @Login
+    @GetMapping("/getOrderStatus/{orderId}")
+    public Result<Integer> getOrderStatus(@PathVariable Long orderId) {
+        return Result.ok(orderService.getOrderStatus(orderId));
+    }
+
     @Operation(summary = "查找乘客端当前订单")
     @Login
     @GetMapping("/searchCustomerCurrentOrder")
