@@ -4,6 +4,7 @@ import com.atguigu.daijia.common.annotation.Login;
 import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.common.util.AuthContextHolder;
 import com.atguigu.daijia.dispatch.client.NewOrderFeignClient;
+import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
 import com.atguigu.daijia.model.vo.order.NewOrderDataVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -50,6 +51,15 @@ public class OrderController {
     public Result<Boolean> clearNewOrderQueueData() {
         Long driverId = AuthContextHolder.getUserId();
         return newOrderFeignClient.clearNewOrderQueueData(driverId);
+    }
+
+    @Operation(summary = "搜索当前订单")
+    @Login
+    @GetMapping("/searchDriverCurrentOrder")
+    public Result<CurrentOrderInfoVo> searchDriverCurrentOrder() {
+        CurrentOrderInfoVo currentOrderInfoVo = new CurrentOrderInfoVo();
+        currentOrderInfoVo.setIsHasCurrentOrder(false);
+        return Result.ok(currentOrderInfoVo);
     }
 }
 
