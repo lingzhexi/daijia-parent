@@ -6,6 +6,10 @@ import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.common.result.ResultCodeEnum;
 import com.atguigu.daijia.driver.client.DriverInfoFeignClient;
 import com.atguigu.daijia.driver.service.DriverService;
+import com.atguigu.daijia.model.form.driver.DriverFaceModelForm;
+import com.atguigu.daijia.model.form.driver.UpdateDriverAuthInfoForm;
+import com.atguigu.daijia.model.vo.driver.DriverAuthInfoVo;
+import com.atguigu.daijia.model.vo.driver.DriverLoginVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -44,4 +48,36 @@ public class DriverServiceImpl implements DriverService {
         //4.返回 token
         return token;
     }
+
+    @Override
+    public DriverLoginVo getDriverLoginInfo(Long driverId) {
+        return driverInfoFeignClient.getDriverLoginInfo(driverId).getData();
+    }
+
+    @Override
+    public DriverAuthInfoVo getDriverAuthInfo(Long driverId) {
+        return driverInfoFeignClient.getDriverAuthInfo(driverId).getData();
+    }
+
+    @Override
+    public Boolean updateDriverAuthInfo(UpdateDriverAuthInfoForm updateDriverAuthInfoForm) {
+        return driverInfoFeignClient.updateDriverAuthInfo(updateDriverAuthInfoForm).getData();
+    }
+
+    @Override
+    public Boolean createDriverFaceModel(DriverFaceModelForm driverFaceModelForm) {
+        return driverInfoFeignClient.createDriverFaceModel(driverFaceModelForm).getData();
+    }
+
+    @Override
+    public Boolean isFaceRecognition(String driverId) {
+        return driverInfoFeignClient.isFaceRecognition(driverId).getData();
+    }
+
+    @Override
+    public Boolean verifyDriverFace(DriverFaceModelForm driverFaceModelForm) {
+        return driverInfoFeignClient.verifyDriverFace(driverFaceModelForm).getData();
+    }
+
+
 }

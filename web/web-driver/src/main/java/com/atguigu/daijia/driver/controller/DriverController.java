@@ -19,14 +19,10 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "司机API接口管理")
 @RestController
 @RequestMapping(value = "/driver")
-@SuppressWarnings({"unchecked", "rawtypes"})
 public class DriverController {
 
     @Autowired
     private DriverService driverService;
-
-    @Autowired
-    private DriverInfoFeignClient driverInfoFeignClient;
 
     @Operation(summary = "小程序授权登录")
     @GetMapping("/login/{code}")
@@ -38,20 +34,16 @@ public class DriverController {
     @Operation(summary = "获取用户登录信息")
     @GetMapping("/getDriverLoginInfo")
     public Result<DriverLoginVo> getDriverLoginInfo() {
-        //1.获取用户id
+        //获取用户id
         Long driverId = AuthContextHolder.getUserId();
-
-        //2.调用远程接口，获取信息返回
-        Result<DriverLoginVo> driverLoginInfo = driverInfoFeignClient.getDriverLoginInfo(driverId);
-        return Result.ok(driverLoginInfo.getData());
+        return Result.ok(driverService.getDriverLoginInfo(driverId));
     }
 
     @Login
     @Operation(summary = "获取司机认证信息")
     @GetMapping("/getDriverAuthInfo/{driverId}")
     public Result<DriverAuthInfoVo> getDriverAuthInfo(@PathVariable Long driverId) {
-        Result<DriverAuthInfoVo> driverAuthInfo = driverInfoFeignClient.getDriverAuthInfo(driverId);
-        return Result.ok(driverAuthInfo.getData());
+        return Result.ok(driverService.getDriverAuthInfo(driverId));
     }
 
     @Login
@@ -59,7 +51,7 @@ public class DriverController {
     @PostMapping("/updateDriverAuthInfo")
     public Result<Boolean> updateDriverAuthInfo(@RequestBody UpdateDriverAuthInfoForm updateDriverAuthInfoForm) {
         updateDriverAuthInfoForm.setDriverId(AuthContextHolder.getUserId());
-        return Result.ok(driverInfoFeignClient.updateDriverAuthInfo(updateDriverAuthInfoForm).getData());
+        return Result.ok(driverService.updateDriverAuthInfo(updateDriverAuthInfoForm));
     }
 
     @Operation(summary = "创建司机人脸模型")
@@ -67,7 +59,20 @@ public class DriverController {
     @PostMapping("/createDriverFaceModel")
     public Result<Boolean> createDriverFaceModel(@RequestBody DriverFaceModelForm driverFaceModelForm) {
         driverFaceModelForm.setDriverId(AuthContextHolder.getUserId());
-        return Result.ok(driverInfoFeignClient.createDriverFaceModel(driverFaceModelForm)).getData();
+        return Result.ok(driverService.createDriverFaceModel(driverFaceModelForm));
+    }
+
+    @Operation(summary = "判断司机当日是否进行过人脸识别")
+    @Login
+    @GetMapping("/isFaceRecognition/{driverId}")
+    public Result<Boolean> isFaceRecognition(@PathVariable("driverId") String driverId) {
+        return Result.ok(driverService.isFaceRecognition(driverId));
+    }
+
+    @Operation(summary = "验证司机人脸")
+    @Login
+    @PostMapping("/verifyDriverFace")
+    public Result<Boolean> verifyDriverFace(DriverFaceModelForm driverFaceModelForm) {
+        return Result.ok(driverService.verifyDriverFace(driverFaceModelForm));
     }
 }
-

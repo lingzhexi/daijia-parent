@@ -6,16 +6,10 @@ import com.atguigu.daijia.common.constant.SystemConstant;
 import com.atguigu.daijia.common.execption.GuiguException;
 import com.atguigu.daijia.common.result.ResultCodeEnum;
 import com.atguigu.daijia.driver.config.TencentConfigProperties;
-import com.atguigu.daijia.driver.mapper.DriverAccountMapper;
-import com.atguigu.daijia.driver.mapper.DriverInfoMapper;
-import com.atguigu.daijia.driver.mapper.DriverLoginLogMapper;
-import com.atguigu.daijia.driver.mapper.DriverSetMapper;
+import com.atguigu.daijia.driver.mapper.*;
 import com.atguigu.daijia.driver.service.CosService;
 import com.atguigu.daijia.driver.service.DriverInfoService;
-import com.atguigu.daijia.model.entity.driver.DriverAccount;
-import com.atguigu.daijia.model.entity.driver.DriverInfo;
-import com.atguigu.daijia.model.entity.driver.DriverLoginLog;
-import com.atguigu.daijia.model.entity.driver.DriverSet;
+import com.atguigu.daijia.model.entity.driver.*;
 import com.atguigu.daijia.model.form.driver.DriverFaceModelForm;
 import com.atguigu.daijia.model.form.driver.UpdateDriverAuthInfoForm;
 import com.atguigu.daijia.model.vo.driver.DriverAuthInfoVo;
@@ -24,17 +18,19 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tencentcloudapi.common.AbstractModel;
 import com.tencentcloudapi.common.exception.TencentCloudSDKException;
-import com.tencentcloudapi.iai.v20180301.models.CreatePersonRequest;
-import com.tencentcloudapi.iai.v20180301.models.CreatePersonResponse;
+import com.tencentcloudapi.iai.v20180301.IaiClient;
+import com.tencentcloudapi.iai.v20180301.models.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.error.WxErrorException;
+import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Slf4j
 @Service
@@ -45,6 +41,9 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
     private WxMaService wxMaService;
 
     @Autowired
+    private DriverInfoMapper driverInfoMapper;
+
+    @Autowired
     private DriverSetMapper driverSetMapper;
 
     @Autowired
@@ -52,6 +51,9 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
 
     @Autowired
     private DriverLoginLogMapper driverLoginLogMapper;
+
+    @Autowired
+    private DriverFaceRecognitionMapper driverFaceRecognitionMapper;
 
     @Autowired
     private HttpServletRequest request;
@@ -72,8 +74,9 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
             openid = sessionInfo.getOpenid();
 
             //2.根据 openid 查询数据库，判定第一次登录
-            DriverInfo driverInfo = this.getOne(
-                    new LambdaQueryWrapper<DriverInfo>().eq(DriverInfo::getWxOpenId, openid));
+            LambdaQueryWrapper<DriverInfo> queryWrapper = new LambdaQueryWrapper();
+            queryWrapper.eq(DriverInfo::getWxOpenId, openid);
+            DriverInfo driverInfo = driverInfoMapper.selectOne(queryWrapper);
 
             if (driverInfo == null) {
                 //3.如果第一次登录，添加司机基本信息 DriverInfo
@@ -115,7 +118,7 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
     @Override
     public DriverLoginVo getDriverLoginInfo(Long driverId) {
         //1.查询司机基本信息
-        DriverInfo driverInfo = this.getById(driverId);
+        DriverInfo driverInfo = driverInfoMapper.selectById(driverId);
 
         //2.查询数据封装vo DriverLoginVo
         DriverLoginVo driverLoginVo = new DriverLoginVo();
@@ -167,7 +170,7 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
     @Override
     public Boolean createDriverFaceModel(DriverFaceModelForm driverFaceModelForm) {
         // 1.查询司机基本信息
-        DriverInfo driverInfo = this.getById(driverFaceModelForm.getDriverId());
+        DriverInfo driverInfo = driverInfoMapper.selectById(driverFaceModelForm.getDriverId());
         try {
             // 2.拼接CreateGroupRequest对象
             CreatePersonRequest req = getRequest(driverFaceModelForm, driverInfo);
@@ -193,8 +196,72 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
     public DriverSet getDriverSet(Long driverId) {
         LambdaQueryWrapper<DriverSet> query = new LambdaQueryWrapper<>();
         query.eq(DriverSet::getDriverId, driverId);
-        DriverSet driverSet = driverSetMapper.selectOne(query);
-        return driverSet;
+        return driverSetMapper.selectOne(query);
+    }
+
+    @Override
+    public Boolean isFaceRecognition(String driverId) {
+        LambdaQueryWrapper<DriverFaceRecognition> queryWrapper = new LambdaQueryWrapper();
+        queryWrapper.eq(DriverFaceRecognition::getDriverId, driverId);
+        queryWrapper.eq(DriverFaceRecognition::getFaceDate, new DateTime().toString("yyyy-MM-dd"));
+        long count = driverFaceRecognitionMapper.selectCount(queryWrapper);
+        return count != 0;
+    }
+
+    @Override
+    public Boolean verifyDriverFace(DriverFaceModelForm driverFaceModelForm) {
+        try {
+            IaiClient client = tencentConfigProperties.getIaiClient();
+            // 生成验证人脸请求对象
+            VerifyFaceRequest req = new VerifyFaceRequest();
+            req.setImage(driverFaceModelForm.getImageBase64());
+            req.setPersonId(String.valueOf(driverFaceModelForm.getDriverId()));
+
+            // 返回的resp是一个VerifyFaceResponse的实例，与请求对象对应
+            VerifyFaceResponse resp = client.VerifyFace(req);
+            // 输出json格式的字符串回包
+            System.out.println(AbstractModel.toJsonString(resp));
+
+            if (resp.getIsMatch()) {
+                //活体检查
+                if (this.detectLiveFace(driverFaceModelForm.getImageBase64())) {
+                    DriverFaceRecognition driverFaceRecognition = new DriverFaceRecognition();
+                    driverFaceRecognition.setDriverId(driverFaceModelForm.getDriverId());
+                    driverFaceRecognition.setFaceDate(new Date());
+                    driverFaceRecognitionMapper.insert(driverFaceRecognition);
+                    return true;
+                }
+            }
+        } catch (TencentCloudSDKException e) {
+            throw new GuiguException(ResultCodeEnum.DATA_ERROR);
+        }
+        return false;
+    }
+
+    /**
+     * 人脸静态活体检测
+     * @param imageBase64
+     * @return
+     */
+    private Boolean detectLiveFace(String imageBase64) {
+        try {
+            IaiClient client = tencentConfigProperties.getIaiClient();
+            // 实例化一个请求对象,每个接口都会对应一个request对象
+            DetectLiveFaceRequest req = new DetectLiveFaceRequest();
+
+            // 返回的resp是一个DetectLiveFaceResponse的实例，与请求对象对应
+            DetectLiveFaceResponse resp = client.DetectLiveFace(req);
+
+            // 输出json格式的字符串回包
+            System.out.println(DetectLiveFaceResponse.toJsonString(resp));
+            if(resp.getIsLiveness()) {
+                return true;
+            }
+        } catch (Exception e) {
+            throw new GuiguException(ResultCodeEnum.DATA_ERROR);
+        }
+        return false;
+
     }
 
     public CreatePersonRequest getRequest(DriverFaceModelForm driverFaceModelForm, DriverInfo driverInfo) {
@@ -203,7 +270,7 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
         // 设置相关值
         req.setGroupId(tencentConfigProperties.getPersonGroupId());
 
-        //基本信息
+        //基本信息111
         req.setPersonId(String.valueOf(driverInfo.getId()));
         req.setGender(Long.parseLong(driverInfo.getGender()));
         req.setQualityControl(4L);

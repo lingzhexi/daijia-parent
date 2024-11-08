@@ -53,7 +53,7 @@ public class OrderController {
         return newOrderFeignClient.clearNewOrderQueueData(driverId);
     }
 
-    @Operation(summary = "搜索当前订单")
+    @Operation(summary = "查找司机端当前订单")
     @Login
     @GetMapping("/searchDriverCurrentOrder")
     public Result<CurrentOrderInfoVo> searchDriverCurrentOrder() {

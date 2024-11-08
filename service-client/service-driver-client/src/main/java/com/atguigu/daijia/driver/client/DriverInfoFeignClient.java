@@ -16,20 +16,35 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface DriverInfoFeignClient {
 
     @GetMapping("/driver/info/login/{code}")
-     Result<Long> login(@PathVariable String code);
+    Result<Long> login(@PathVariable String code);
 
     @GetMapping("/driver/info/getDriverLoginInfo/{driverId}")
-     Result<DriverLoginVo> getDriverLoginInfo(@PathVariable Long driverId);
+    Result<DriverLoginVo> getDriverLoginInfo(@PathVariable Long driverId);
 
     @GetMapping("/driver/info/getDriverAuthInfo/{driverId}")
-     Result<DriverAuthInfoVo> getDriverAuthInfo(@PathVariable("driverId") Long driverId);
+    Result<DriverAuthInfoVo> getDriverAuthInfo(@PathVariable("driverId") Long driverId);
 
     @PostMapping("/driver/info/updateDriverAuthInfo")
-     Result<Boolean> updateDriverAuthInfo(@RequestBody UpdateDriverAuthInfoForm updateDriverAuthInfoForm);
+    Result<Boolean> updateDriverAuthInfo(@RequestBody UpdateDriverAuthInfoForm updateDriverAuthInfoForm);
 
     @PostMapping("/driver/info/createDriverFaceModel")
-     Result<Boolean> createDriverFaceModel(@RequestBody DriverFaceModelForm driverFaceModelForm);
+    Result<Boolean> createDriverFaceModel(@RequestBody DriverFaceModelForm driverFaceModelForm);
 
     @GetMapping("/driver/info/getDriverSet/{driverId}")
     Result<DriverSet> getDriverSet(@PathVariable Long driverId);
+
+    /**
+     * 判断司机当日是否进行过人脸识别
+     */
+    @GetMapping("/driver/info/isFaceRecognition/{driverId}")
+    Result<Boolean> isFaceRecognition(@PathVariable("driverId") String driverId);
+
+    /**
+     * 验证司机人脸
+     *
+     * @param driverFaceModelForm
+     * @return
+     */
+    @PostMapping("/driver/info/verifyDriverFace")
+    Result<Boolean> verifyDriverFace(@RequestBody DriverFaceModelForm driverFaceModelForm);
 }

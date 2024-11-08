@@ -44,8 +44,7 @@ public class TencentConfigProperties {
         // 这里建议设置使用 https 协议
         clientConfig.setHttpProtocol(HttpProtocol.https);
         // 3 生成 cos 客户端。
-        COSClient cosClient = new COSClient(cred, clientConfig);
-        return cosClient;
+        return new COSClient(cred, clientConfig);
     }
 
     /**
@@ -64,8 +63,7 @@ public class TencentConfigProperties {
         ClientProfile clientProfile = new ClientProfile();
         clientProfile.setHttpProfile(httpProfile);
         // 4.实例化要请求产品的client对象,clientProfile是可选的
-        OcrClient client = new OcrClient(cred, this.getRegion(), clientProfile);
-        return client;
+        return new OcrClient(cred, this.getRegion(), clientProfile);
     }
 
     @Bean
@@ -79,8 +77,7 @@ public class TencentConfigProperties {
         ClientProfile clientProfile = new ClientProfile();
         clientProfile.setHttpProfile(httpProfile);
         // 4.实例化要请求产品的client对象,clientProfile是可选的
-        IaiClient client = new IaiClient(cred, this.getRegion(), clientProfile);
-        return client;
+        return new IaiClient(cred, this.getRegion(), clientProfile);
     }
 
 }
