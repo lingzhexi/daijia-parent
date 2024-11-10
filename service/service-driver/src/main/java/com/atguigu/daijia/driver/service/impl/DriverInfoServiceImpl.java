@@ -27,6 +27,7 @@ import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
@@ -221,10 +222,10 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
             VerifyFaceResponse resp = client.VerifyFace(req);
             // 输出json格式的字符串回包
             System.out.println(AbstractModel.toJsonString(resp));
-
-            if (resp.getIsMatch()) {
-                //活体检查
-                if (this.detectLiveFace(driverFaceModelForm.getImageBase64())) {
+            if (resp.getIsMatch()) {//照片对比成功
+                //2.如果照片对比成功，静态活体活体检测
+                Boolean isSuccess = this.detectLiveFace(driverFaceModelForm.getImageBase64());
+                if (isSuccess) {//3.静态活体检测通过，添加数据到认证表里
                     DriverFaceRecognition driverFaceRecognition = new DriverFaceRecognition();
                     driverFaceRecognition.setDriverId(driverFaceModelForm.getDriverId());
                     driverFaceRecognition.setFaceDate(new Date());
@@ -233,9 +234,10 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
                 }
             }
         } catch (TencentCloudSDKException e) {
-            throw new GuiguException(ResultCodeEnum.DATA_ERROR);
+            System.out.println(e.toString());
+//            throw new GuiguException(ResultCodeEnum.FACE_ERROR);
         }
-        return false;
+        throw new GuiguException(ResultCodeEnum.FACE_ERROR);
     }
 
     /**
@@ -262,6 +264,18 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
         }
         return false;
 
+    }
+
+
+    @Transactional
+    @Override
+    public Boolean updateServiceStatus(Long driverId, Integer status) {
+        LambdaQueryWrapper<DriverSet> queryWrapper = new LambdaQueryWrapper();
+        queryWrapper.eq(DriverSet::getDriverId, driverId);
+        DriverSet driverSet = new DriverSet();
+        driverSet.setServiceStatus(status);
+        driverSetMapper.update(driverSet, queryWrapper);
+        return true;
     }
 
     public CreatePersonRequest getRequest(DriverFaceModelForm driverFaceModelForm, DriverInfo driverInfo) {

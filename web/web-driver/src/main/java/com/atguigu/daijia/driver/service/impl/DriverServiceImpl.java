@@ -79,5 +79,10 @@ public class DriverServiceImpl implements DriverService {
         return driverInfoFeignClient.verifyDriverFace(driverFaceModelForm).getData();
     }
 
+    @Override
+    public Boolean updateServiceStatus(Long driverId, Integer status) {
+        return driverInfoFeignClient.updateServiceStatus(driverId, status).getData();
+    }
+
 
 }
