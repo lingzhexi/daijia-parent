@@ -201,7 +201,7 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
     }
 
     @Override
-    public Boolean isFaceRecognition(String driverId) {
+    public Boolean isFaceRecognition(Long driverId) {
         LambdaQueryWrapper<DriverFaceRecognition> queryWrapper = new LambdaQueryWrapper();
         queryWrapper.eq(DriverFaceRecognition::getDriverId, driverId);
         queryWrapper.eq(DriverFaceRecognition::getFaceDate, new DateTime().toString("yyyy-MM-dd"));

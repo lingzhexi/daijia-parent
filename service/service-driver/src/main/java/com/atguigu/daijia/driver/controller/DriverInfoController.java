@@ -62,7 +62,7 @@ public class DriverInfoController {
 
     @Operation(summary = "判断司机当日是否进行过人脸识别")
     @GetMapping("/isFaceRecognition/{driverId}")
-    public Result<Boolean> isFaceRecognition(@PathVariable("driverId") String driverId) {
+    public Result<Boolean> isFaceRecognition(@PathVariable("driverId") Long driverId) {
         return Result.ok(driverInfoService.isFaceRecognition(driverId));
     }
 
