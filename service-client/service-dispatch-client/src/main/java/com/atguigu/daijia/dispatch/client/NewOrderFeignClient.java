@@ -34,7 +34,7 @@ public interface NewOrderFeignClient {
     Result<List<NewOrderDataVo>> findNewOrderQueueData(@PathVariable Long driverId);
 
     /**
-     * 查询司机新订单数据
+     * 清空司机新订单队列
      *
      * @param driverId
      * @return

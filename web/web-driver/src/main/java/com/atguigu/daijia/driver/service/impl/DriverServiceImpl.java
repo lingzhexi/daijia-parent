@@ -4,8 +4,10 @@ import com.atguigu.daijia.common.constant.RedisConstant;
 import com.atguigu.daijia.common.execption.GuiguException;
 import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.common.result.ResultCodeEnum;
+import com.atguigu.daijia.dispatch.client.NewOrderFeignClient;
 import com.atguigu.daijia.driver.client.DriverInfoFeignClient;
 import com.atguigu.daijia.driver.service.DriverService;
+import com.atguigu.daijia.map.client.LocationFeignClient;
 import com.atguigu.daijia.model.form.driver.DriverFaceModelForm;
 import com.atguigu.daijia.model.form.driver.UpdateDriverAuthInfoForm;
 import com.atguigu.daijia.model.vo.driver.DriverAuthInfoVo;
@@ -28,6 +30,12 @@ public class DriverServiceImpl implements DriverService {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    private LocationFeignClient locationFeignClient;
+
+    @Autowired
+    private NewOrderFeignClient newOrderFeignClient;
 
     //登陆
     @Override
@@ -70,7 +78,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public Boolean isFaceRecognition(String driverId) {
+    public Boolean isFaceRecognition(Long driverId) {
         return driverInfoFeignClient.isFaceRecognition(driverId).getData();
     }
 
@@ -83,6 +91,28 @@ public class DriverServiceImpl implements DriverService {
     public Boolean updateServiceStatus(Long driverId, Integer status) {
         return driverInfoFeignClient.updateServiceStatus(driverId, status).getData();
     }
+
+    @Override
+    public Boolean startService(Long driverId) {
+        //判断认证状态
+        DriverLoginVo driverLoginInfo = getDriverLoginInfo(driverId);
+        if (driverLoginInfo.getAuthStatus() !=2) {
+            throw new GuiguException(ResultCodeEnum.AUTH_ERROR);
+        }
+        //判断当日是否人脸识别
+        Boolean faceRecognition = isFaceRecognition(driverId);
+        if (faceRecognition) {
+            throw new GuiguException(ResultCodeEnum.FACE_ERROR);
+        }
+        //更新司机接单状态(1.开始接单，2.关闭接单)
+        updateServiceStatus(driverId, 1);
+        //删除司机位置信息
+        locationFeignClient.removeDriverLocation(driverId);
+        //清空司机新订单队列
+        newOrderFeignClient.clearNewOrderQueueData(driverId);
+        return true;
+    }
+
 
 
 }

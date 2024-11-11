@@ -18,10 +18,11 @@ public interface DriverService {
 
     Boolean createDriverFaceModel(DriverFaceModelForm driverFaceModelForm);
 
-    Boolean isFaceRecognition(String driverId);
-
+    Boolean isFaceRecognition(Long driverId);
 
     Boolean verifyDriverFace(DriverFaceModelForm driverFaceModelForm);
 
     Boolean updateServiceStatus(Long driverId, Integer status);
+
+    Boolean startService(Long driverId);
 }

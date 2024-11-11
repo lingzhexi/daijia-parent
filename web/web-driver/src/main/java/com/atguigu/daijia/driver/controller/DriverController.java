@@ -65,7 +65,7 @@ public class DriverController {
     @Operation(summary = "判断司机当日是否进行过人脸识别")
     @Login
     @GetMapping("/isFaceRecognition/{driverId}")
-    public Result<Boolean> isFaceRecognition(@PathVariable("driverId") String driverId) {
+    public Result<Boolean> isFaceRecognition(@PathVariable("driverId") Long driverId) {
         return Result.ok(driverService.isFaceRecognition(driverId));
     }
 
@@ -79,7 +79,15 @@ public class DriverController {
     @Operation(summary = "更新接单状态")
     @Login
     @GetMapping("/driver/info/updateServiceStatus/{driverId}/{status}")
-    Result<Boolean> updateServiceStatus(@PathVariable("driverId") Long driverId, @PathVariable("status") Integer status){
-        return Result.ok(driverService.updateServiceStatus(driverId,status));
+    public Result<Boolean> updateServiceStatus(@PathVariable("driverId") Long driverId, @PathVariable("status") Integer status) {
+        return Result.ok(driverService.updateServiceStatus(driverId, status));
+    }
+
+    @Operation(summary = "开始接单服务模式")
+    @Login
+    @GetMapping("/startService")
+    public Result<Boolean> startService() {
+        Long driverId = AuthContextHolder.getUserId();
+        return Result.ok(driverService.startService(driverId));
     }
 }
