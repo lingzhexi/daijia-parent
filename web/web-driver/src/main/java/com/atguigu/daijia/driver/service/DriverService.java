@@ -25,4 +25,6 @@ public interface DriverService {
     Boolean updateServiceStatus(Long driverId, Integer status);
 
     Boolean startService(Long driverId);
+
+    Boolean stopService(Long driverId);
 }
