@@ -78,7 +78,7 @@ public class DriverController {
 
     @Operation(summary = "更新接单状态")
     @Login
-    @GetMapping("/driver/info/updateServiceStatus/{driverId}/{status}")
+    @GetMapping("/updateServiceStatus/{driverId}/{status}")
     public Result<Boolean> updateServiceStatus(@PathVariable("driverId") Long driverId, @PathVariable("status") Integer status) {
         return Result.ok(driverService.updateServiceStatus(driverId, status));
     }
