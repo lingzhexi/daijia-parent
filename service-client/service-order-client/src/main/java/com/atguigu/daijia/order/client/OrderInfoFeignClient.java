@@ -23,10 +23,15 @@ public interface OrderInfoFeignClient {
 
     /**
      * 获取订单状态
+     *
      * @param orderId
      * @return
      */
     @GetMapping("/order/info/getOrderStatus/{orderId}")
     Result<Integer> getOrderStatus(@PathVariable Long orderId);
+
+
+    @GetMapping("/order/info/robNewOrder/{driverId}/{orderId}")
+    Result<Boolean> robNewOrder(@PathVariable("driverId") Long driverId, @PathVariable("orderId") Long orderId);
 
 }
