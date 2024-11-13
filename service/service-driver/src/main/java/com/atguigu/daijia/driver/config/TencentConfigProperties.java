@@ -26,7 +26,6 @@ public class TencentConfigProperties {
     private String bucketPrivate;
     private String personGroupId;
 
-
     /**
      * 创建cos客户端
      *

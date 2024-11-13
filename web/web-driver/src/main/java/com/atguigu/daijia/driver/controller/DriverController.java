@@ -3,7 +3,6 @@ package com.atguigu.daijia.driver.controller;
 import com.atguigu.daijia.common.annotation.Login;
 import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.common.util.AuthContextHolder;
-import com.atguigu.daijia.driver.client.DriverInfoFeignClient;
 import com.atguigu.daijia.driver.service.DriverService;
 import com.atguigu.daijia.model.form.driver.DriverFaceModelForm;
 import com.atguigu.daijia.model.form.driver.UpdateDriverAuthInfoForm;
@@ -41,8 +40,9 @@ public class DriverController {
 
     @Login
     @Operation(summary = "获取司机认证信息")
-    @GetMapping("/getDriverAuthInfo/{driverId}")
-    public Result<DriverAuthInfoVo> getDriverAuthInfo(@PathVariable Long driverId) {
+    @GetMapping("/getDriverAuthInfo")
+    public Result<DriverAuthInfoVo> getDriverAuthInfo() {
+        Long driverId = AuthContextHolder.getUserId();
         return Result.ok(driverService.getDriverAuthInfo(driverId));
     }
 
@@ -54,45 +54,48 @@ public class DriverController {
         return Result.ok(driverService.updateDriverAuthInfo(updateDriverAuthInfoForm));
     }
 
-    @Operation(summary = "创建司机人脸模型")
     @Login
+    @Operation(summary = "创建司机人脸模型")
     @PostMapping("/createDriverFaceModel")
     public Result<Boolean> createDriverFaceModel(@RequestBody DriverFaceModelForm driverFaceModelForm) {
         driverFaceModelForm.setDriverId(AuthContextHolder.getUserId());
         return Result.ok(driverService.createDriverFaceModel(driverFaceModelForm));
     }
 
-    @Operation(summary = "判断司机当日是否进行过人脸识别")
     @Login
-    @GetMapping("/isFaceRecognition/{driverId}")
-    public Result<Boolean> isFaceRecognition(@PathVariable("driverId") Long driverId) {
-        return Result.ok(driverService.isFaceRecognition(driverId));
+    @Operation(summary = "判断司机当日是否进行过人脸识别")
+    @GetMapping("/isFaceRecognition")
+    public Result<Boolean> isFaceRecognition() {
+        Long driverId = AuthContextHolder.getUserId();
+//        return Result.ok(driverService.isFaceRecognition(driverId));
+        //todo 测试用，用完注释下面代码
+        return Result.ok(true);
     }
 
-    @Operation(summary = "验证司机人脸")
     @Login
+    @Operation(summary = "验证司机人脸")
     @PostMapping("/verifyDriverFace")
     public Result<Boolean> verifyDriverFace(DriverFaceModelForm driverFaceModelForm) {
         return Result.ok(driverService.verifyDriverFace(driverFaceModelForm));
     }
 
-    @Operation(summary = "更新接单状态")
     @Login
+    @Operation(summary = "更新接单状态")
     @GetMapping("/updateServiceStatus/{driverId}/{status}")
     public Result<Boolean> updateServiceStatus(@PathVariable("driverId") Long driverId, @PathVariable("status") Integer status) {
         return Result.ok(driverService.updateServiceStatus(driverId, status));
     }
 
-    @Operation(summary = "开始接单服务模式")
     @Login
+    @Operation(summary = "开始接单服务模式")
     @GetMapping("/startService")
     public Result<Boolean> startService() {
         Long driverId = AuthContextHolder.getUserId();
         return Result.ok(driverService.startService(driverId));
     }
 
-    @Operation(summary = "停止接单服务模式")
     @Login
+    @Operation(summary = "停止接单服务模式")
     @GetMapping("/stopService")
     public Result<Boolean> stopService() {
         Long driverId = AuthContextHolder.getUserId();

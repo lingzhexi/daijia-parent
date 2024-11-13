@@ -186,6 +186,7 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
                 this.updateById(driverInfo);
             }
         } catch (TencentCloudSDKException e) {
+            log.error("人脸识别异常：{}", e.getMessage());
             return false;
         }
         return true;
@@ -250,7 +251,7 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
             IaiClient client = tencentConfigProperties.getIaiClient();
             // 实例化一个请求对象,每个接口都会对应一个request对象
             DetectLiveFaceRequest req = new DetectLiveFaceRequest();
-
+            req.setImage(imageBase64);
             // 返回的resp是一个DetectLiveFaceResponse的实例，与请求对象对应
             DetectLiveFaceResponse resp = client.DetectLiveFace(req);
 
